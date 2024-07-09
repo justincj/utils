@@ -4,15 +4,31 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+    "path/filepath"
 	"time"
 )
 
 func main() {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Printf("Error getting home directory: %v\n", err)
+		os.Exit(1)
+	}
+
+	notesDir := filepath.Join(homeDir, "notes", "log")
+
+	err = os.MkdirAll(notesDir, 0755)
+	if err != nil {
+		fmt.Printf("Error creating notes directory: %v\n", err)
+		os.Exit(1)
+	}
+
+
 	today := time.Now().Format("2006-01-02")
 
-	filename := today + ".md"
+	filename := filepath.Join(notesDir, today + ".md")
 
-	_, err := os.Stat(filename)
+	_, err = os.Stat(filename)
 
 	if os.IsNotExist(err) {
 		file, err := os.Create(filename)
